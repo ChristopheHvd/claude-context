@@ -1,0 +1,105 @@
+import { getHistory, analyzeHabits } from '../lib/historyAnalyzer.js';
+import { buildContext, truncateForPrompt } from '../lib/contextBuilder.js';
+import { generateProfile } from '../lib/claudeClient.js';
+import { recommendSkills } from '../lib/skillRecommender.js';
+
+// ── DOM refs ──────────────────────────────────────────────────────────────
+const screens = {
+  settings: document.getElementById('screen-settings'),
+  main:     document.getElementById('screen-main'),
+  launched: document.getElementById('screen-launched'),
+};
+
+function showScreen(name) {
+  for (const s of Object.values(screens)) s.classList.add('hidden');
+  screens[name].classList.remove('hidden');
+}
+
+// ── Settings screen ───────────────────────────────────────────────────────
+const apiKeyInput   = document.getElementById('api-key-input');
+const btnSaveKey    = document.getElementById('btn-save-key');
+const settingsError = document.getElementById('settings-error');
+
+btnSaveKey.addEventListener('click', async () => {
+  const key = apiKeyInput.value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    showError(settingsError, 'La clé doit commencer par "sk-ant-"');
+    return;
+  }
+  await chrome.storage.local.set({ apiKey: key });
+  settingsError.classList.add('hidden');
+  showScreen('main');
+});
+
+apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnSaveKey.click(); });
+
+// ── Main screen ───────────────────────────────────────────────────────────
+const btnSettings   = document.getElementById('btn-settings');
+const selectDays    = document.getElementById('select-days');
+const inputName     = document.getElementById('input-name');
+const inputRole     = document.getElementById('input-role');
+const mainError     = document.getElementById('main-error');
+const btnGenerate   = document.getElementById('btn-generate');
+const btnGenText    = document.getElementById('btn-generate-text');
+const btnGenSpinner = document.getElementById('btn-generate-spinner');
+
+btnSettings.addEventListener('click', () => {
+  loadStoredKey();
+  showScreen('settings');
+});
+
+btnGenerate.addEventListener('click', async () => {
+  mainError.classList.add('hidden');
+  setGenerating(true);
+
+  try {
+    const { apiKey } = await chrome.storage.local.get('apiKey');
+    if (!apiKey) { loadStoredKey(); showScreen('settings'); return; }
+
+    const days = Number(selectDays.value);
+    const name = inputName.value.trim();
+    const role = inputRole.value.trim();
+
+    const { domains, peakHours, totalVisits } = await getHistory(days);
+    const habits          = analyzeHabits(domains, peakHours);
+    const context         = buildContext({ habits, peakHours, totalVisits, name, role, days });
+    const topCategoryIds  = habits.categories.slice(0, 3).map(c => c.id);
+
+    // Appel Claude directement dans le popup (évite le problème de durée de vie du service worker MV3)
+    const markdown = await generateProfile(truncateForPrompt(context), apiKey);
+    const skills   = recommendSkills(topCategoryIds);
+    await chrome.storage.local.set({ lastResult: { markdown, skills, error: null } });
+
+    // Ouvrir l'onglet résultat AVANT de fermer le popup
+    await chrome.tabs.create({ url: chrome.runtime.getURL('results/results.html') });
+    showScreen('launched');
+    setTimeout(() => window.close(), 800);
+
+  } catch (err) {
+    showError(mainError, err.message || 'Une erreur est survenue.');
+    setGenerating(false);
+  }
+});
+
+function setGenerating(on) {
+  btnGenerate.disabled = on;
+  btnGenText.textContent = on ? 'Préparation…' : 'Générer mon profil';
+  btnGenSpinner.classList.toggle('hidden', !on);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function showError(el, msg) {
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+async function loadStoredKey() {
+  const { apiKey } = await chrome.storage.local.get('apiKey');
+  if (apiKey) apiKeyInput.value = apiKey;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+(async () => {
+  const { apiKey } = await chrome.storage.local.get('apiKey');
+  showScreen(apiKey ? 'main' : 'settings');
+})();

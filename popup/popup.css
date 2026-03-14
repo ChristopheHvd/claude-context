@@ -1,0 +1,289 @@
+/* ── Variables ── */
+:root {
+  --bg:       #1a1a1a;
+  --surface:  #242424;
+  --surface2: #2e2e2e;
+  --border:   #3a3a3a;
+  --text:     #e8e8e8;
+  --text-dim: #888;
+  --accent:   #f59e0b;
+  --accent-h: #fbbf24;
+  --danger:   #ef4444;
+  --radius:   8px;
+  --font:     'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  width: 380px;
+  min-height: 200px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.hidden { display: none !important; }
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--accent);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+.icon-btn:hover { color: var(--text); background: var(--surface2); }
+
+/* ── Settings screen ── */
+.settings-body {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.settings-body h2 { font-size: 15px; font-weight: 600; }
+.settings-desc { color: var(--text-dim); line-height: 1.5; }
+
+/* ── Main screen ── */
+.main-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.optional { font-weight: 400; opacity: 0.6; text-transform: none; }
+
+.text-input, .select-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.text-input:focus, .select-input:focus { border-color: var(--accent); }
+.select-input { cursor: pointer; appearance: auto; }
+
+/* ── Buttons ── */
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  transition: background 0.15s, opacity 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--accent);
+  color: #1a1a1a;
+  width: 100%;
+  padding: 10px;
+}
+.btn-primary:hover:not(:disabled) { background: var(--accent-h); }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--border); }
+
+.btn-sm { font-size: 12px; padding: 6px 10px; }
+
+.link-small {
+  color: var(--accent);
+  text-align: center;
+  font-size: 12px;
+  text-decoration: none;
+}
+.link-small:hover { text-decoration: underline; }
+
+/* ── Spinner ── */
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(26,26,26,0.3);
+  border-top-color: #1a1a1a;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Error ── */
+.error-msg {
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--radius);
+  color: #fca5a5;
+  font-size: 12px;
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+/* ── Result screen ── */
+.result-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.copy-feedback {
+  text-align: center;
+  font-size: 12px;
+  color: var(--accent);
+  padding: 4px 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Markdown rendering ── */
+.markdown-body {
+  padding: 16px;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+.markdown-body h1 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--accent); }
+.markdown-body h2 { font-size: 13px; font-weight: 600; margin: 14px 0 6px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.markdown-body h3 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+.markdown-body p { margin-bottom: 8px; color: var(--text-dim); }
+.markdown-body ul { padding-left: 16px; margin-bottom: 8px; }
+.markdown-body li { margin-bottom: 3px; color: var(--text-dim); }
+.markdown-body strong { color: var(--text); font-weight: 600; }
+.markdown-body table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 8px; }
+.markdown-body th { background: var(--surface2); padding: 5px 8px; text-align: left; border: 1px solid var(--border); font-weight: 600; }
+.markdown-body td { padding: 4px 8px; border: 1px solid var(--border); color: var(--text-dim); }
+.markdown-body code { background: var(--surface2); padding: 1px 4px; border-radius: 3px; font-size: 11px; font-family: 'Fira Code', 'Consolas', monospace; }
+
+/* ── Launched screen ── */
+.launched-body {
+  padding: 32px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.launched-icon {
+  font-size: 32px;
+  color: var(--accent);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.launched-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.launched-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+/* ── Skills section ── */
+.skills-section {
+  border-top: 1px solid var(--border);
+  padding: 14px 16px 16px;
+  background: var(--surface);
+}
+
+.skills-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.skills-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skill-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.skill-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.skill-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Context</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ── Settings screen ── -->
+  <div id="screen-settings" class="screen hidden">
+    <header class="header">
+      <span class="logo">◈ Context</span>
+    </header>
+    <div class="settings-body">
+      <h2>Configuration</h2>
+      <p class="settings-desc">
+        Entrez votre clé API Anthropic pour générer votre profil de contexte.
+        La clé est stockée localement sur votre appareil.
+      </p>
+      <label for="api-key-input" class="field-label">Clé API Anthropic</label>
+      <input
+        type="password"
+        id="api-key-input"
+        class="text-input"
+        placeholder="sk-ant-..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div id="settings-error" class="error-msg hidden"></div>
+      <button id="btn-save-key" class="btn btn-primary">Enregistrer</button>
+      <a
+        href="https://console.anthropic.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-small"
+      >Obtenir une clé Anthropic →</a>
+    </div>
+  </div>
+
+  <!-- ── Main screen ── -->
+  <div id="screen-main" class="screen hidden">
+    <header class="header">
+      <span class="logo">◈ Context</span>
+      <button id="btn-settings" class="icon-btn" title="Paramètres">⚙</button>
+    </header>
+    <div class="main-body">
+      <div class="field-group">
+        <label for="select-days" class="field-label">Période d'analyse</label>
+        <select id="select-days" class="select-input">
+          <option value="7">7 derniers jours</option>
+          <option value="14">14 derniers jours</option>
+          <option value="30" selected>30 derniers jours</option>
+          <option value="90">90 derniers jours</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="input-name" class="field-label">Votre nom <span class="optional">(optionnel)</span></label>
+        <input type="text" id="input-name" class="text-input" placeholder="Ex : Alice Martin" />
+      </div>
+      <div class="field-group">
+        <label for="input-role" class="field-label">Votre rôle <span class="optional">(optionnel)</span></label>
+        <input type="text" id="input-role" class="text-input" placeholder="Ex : Développeur fullstack" />
+      </div>
+      <div id="main-error" class="error-msg hidden"></div>
+      <button id="btn-generate" class="btn btn-primary">
+        <span id="btn-generate-text">Générer mon profil</span>
+        <span id="btn-generate-spinner" class="spinner hidden"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Launched screen ── -->
+  <div id="screen-launched" class="screen hidden">
+    <div class="launched-body">
+      <div class="launched-icon">◈</div>
+      <p class="launched-title">Analyse lancée !</p>
+      <p class="launched-desc">Un nouvel onglet s'ouvrira automatiquement dès que votre profil est prêt.<br>Vous pouvez fermer cette fenêtre.</p>
+    </div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

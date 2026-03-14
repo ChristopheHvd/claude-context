@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Context — Profil</title>
+  <link rel="stylesheet" href="results.css" />
+</head>
+<body>
+  <div class="toolbar">
+    <span class="logo">◈ Context</span>
+    <div class="toolbar-actions">
+      <button id="btn-copy" class="btn btn-secondary">Copier le markdown</button>
+      <button id="btn-download-md" class="btn btn-secondary">↓ .md</button>
+      <button id="btn-download-sh" class="btn btn-primary">↓ install-skills.sh</button>
+    </div>
+    <span id="copy-feedback" class="copy-feedback hidden">Copié !</span>
+  </div>
+
+  <div class="layout">
+    <main class="main-col">
+      <div id="result-markdown" class="markdown-body"></div>
+    </main>
+
+    <aside id="skills-aside" class="skills-aside hidden">
+      <h2 class="skills-title">Skills recommandés</h2>
+      <p class="skills-subtitle">Basés sur votre profil de navigation</p>
+
+      <div id="tier-indispensable" class="tier-section hidden">
+        <h3 class="tier-label tier-label--indispensable">Indispensables</h3>
+        <ul id="skills-list-indispensable" class="skills-list"></ul>
+      </div>
+
+      <div id="tier-interessante" class="tier-section hidden">
+        <h3 class="tier-label tier-label--interessante">Intéressantes</h3>
+        <ul id="skills-list-interessante" class="skills-list"></ul>
+      </div>
+
+      <div class="install-hint">
+        <strong>Installation :</strong> téléchargez le script et exécutez
+        <code>bash install-skills.sh</code>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../vendor/marked.min.js"></script>
+  <script type="module" src="results.js"></script>
+</body>
+</html>
