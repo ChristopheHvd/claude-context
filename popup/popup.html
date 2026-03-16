@@ -19,7 +19,11 @@
         Entrez votre clé API Anthropic pour générer votre profil de contexte.
         La clé est stockée localement sur votre appareil.
       </p>
-      <label for="api-key-input" class="field-label">Clé API Anthropic</label>
+      <div class="field-group">
+        <label for="select-provider" class="field-label">Fournisseur IA</label>
+        <select id="select-provider" class="select-input"></select>
+      </div>
+      <label for="api-key-input" class="field-label">Clé API</label>
       <input
         type="password"
         id="api-key-input"
