@@ -104,7 +104,8 @@ context-extension/
 ├── lib/
 │   ├── historyAnalyzer.js # chrome.history → domaines agrégés + catégories
 │   ├── contextBuilder.js  # Formatage du contexte pour le prompt
-│   ├── claudeClient.js    # Appel API Anthropic via fetch
+│   ├── providers.js       # Configuration par fournisseur IA (endpoint, headers, format)
+│   ├── aiClient.js        # Client IA générique multi-provider
 │   └── skillRecommender.js # Catalogue statique → skills recommandés
 ├── vendor/
 │   └── marked.min.js      # marked.js bundlé (CSP MV3 interdit les CDN)
