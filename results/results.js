@@ -57,8 +57,10 @@ function makeSkillItem(skill) {
   const li = document.createElement('li');
   li.className = 'skill-item';
   li.innerHTML = `
-    <span class="skill-name">${esc(skill.name)}</span>
-    <span class="skill-desc">${esc(skill.description)}</span>
+    <a class="skill-link" href="${esc(skill.url)}" target="_blank" rel="noopener noreferrer">
+      <span class="skill-name">${esc(skill.name)}</span>
+      <span class="skill-desc">${esc(skill.description)}</span>
+    </a>
   `;
   return li;
 }

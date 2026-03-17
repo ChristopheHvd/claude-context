@@ -174,7 +174,19 @@ body {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  padding: 0;
+  transition: border-color 0.15s;
+}
+
+.skill-item:hover {
+  border-color: var(--accent);
+}
+
+.skill-link {
+  display: block;
   padding: 9px 11px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .skill-name {
