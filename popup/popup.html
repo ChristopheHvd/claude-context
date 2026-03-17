@@ -16,26 +16,31 @@
     <div class="settings-body">
       <h2>Configuration</h2>
       <p class="settings-desc">
-        Entrez votre clé API Anthropic pour générer votre profil de contexte.
+        Choisissez votre fournisseur IA et entrez votre clé API.
         La clé est stockée localement sur votre appareil.
       </p>
-      <label for="api-key-input" class="field-label">Clé API Anthropic</label>
+      <div class="field-group">
+        <label for="select-provider" class="field-label">Fournisseur IA</label>
+        <select id="select-provider" class="select-input"></select>
+      </div>
+      <label for="api-key-input" class="field-label">Clé API</label>
       <input
         type="password"
         id="api-key-input"
         class="text-input"
-        placeholder="sk-ant-..."
+        placeholder=""
         autocomplete="off"
         spellcheck="false"
       />
       <div id="settings-error" class="error-msg hidden"></div>
       <button id="btn-save-key" class="btn btn-primary">Enregistrer</button>
       <a
-        href="https://console.anthropic.com/"
+        id="link-console"
+        href="#"
         target="_blank"
         rel="noopener noreferrer"
         class="link-small"
-      >Obtenir une clé Anthropic →</a>
+      >Obtenir une clé API →</a>
     </div>
   </div>
 

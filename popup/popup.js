@@ -1,7 +1,8 @@
 import { getHistory, analyzeHabits } from '../lib/historyAnalyzer.js';
 import { buildContext, truncateForPrompt } from '../lib/contextBuilder.js';
-import { generateProfile } from '../lib/claudeClient.js';
+import { generateProfile } from '../lib/aiClient.js';
 import { recommendSkills } from '../lib/skillRecommender.js';
+import { getAllProviders, getProvider } from '../lib/providers.js';
 
 // ── DOM refs ──────────────────────────────────────────────────────────────
 const screens = {
@@ -16,17 +17,44 @@ function showScreen(name) {
 }
 
 // ── Settings screen ───────────────────────────────────────────────────────
-const apiKeyInput   = document.getElementById('api-key-input');
-const btnSaveKey    = document.getElementById('btn-save-key');
-const settingsError = document.getElementById('settings-error');
+const selectProvider = document.getElementById('select-provider');
+const apiKeyInput    = document.getElementById('api-key-input');
+const btnSaveKey     = document.getElementById('btn-save-key');
+const settingsError  = document.getElementById('settings-error');
+const linkConsole    = document.getElementById('link-console');
+
+// Populate provider dropdown
+for (const p of getAllProviders()) {
+  const opt = document.createElement('option');
+  opt.value = p.id;
+  opt.textContent = p.name;
+  selectProvider.appendChild(opt);
+}
+
+function updateProviderUI(providerId) {
+  const provider = getProvider(providerId);
+  apiKeyInput.placeholder = provider.placeholder;
+  linkConsole.href = provider.consoleUrl;
+  linkConsole.textContent = `${provider.consoleLabel} →`;
+  // Load stored key for this provider
+  chrome.storage.local.get(`apiKey_${providerId}`).then(result => {
+    apiKeyInput.value = result[`apiKey_${providerId}`] || '';
+  });
+}
+
+selectProvider.addEventListener('change', () => {
+  updateProviderUI(selectProvider.value);
+});
 
 btnSaveKey.addEventListener('click', async () => {
+  const providerId = selectProvider.value;
+  const provider = getProvider(providerId);
   const key = apiKeyInput.value.trim();
-  if (!key.startsWith('sk-ant-')) {
-    showError(settingsError, 'La clé doit commencer par "sk-ant-"');
+  if (!provider.validate(key)) {
+    showError(settingsError, `Clé invalide pour ${provider.name}. Format attendu : ${provider.placeholder}`);
     return;
   }
-  await chrome.storage.local.set({ apiKey: key });
+  await chrome.storage.local.set({ [`apiKey_${providerId}`]: key, providerId });
   settingsError.classList.add('hidden');
   showScreen('main');
 });
@@ -44,7 +72,7 @@ const btnGenText    = document.getElementById('btn-generate-text');
 const btnGenSpinner = document.getElementById('btn-generate-spinner');
 
 btnSettings.addEventListener('click', () => {
-  loadStoredKey();
+  loadStoredSettings();
   showScreen('settings');
 });
 
@@ -53,8 +81,11 @@ btnGenerate.addEventListener('click', async () => {
   setGenerating(true);
 
   try {
-    const { apiKey } = await chrome.storage.local.get('apiKey');
-    if (!apiKey) { loadStoredKey(); showScreen('settings'); return; }
+    const { providerId } = await chrome.storage.local.get('providerId');
+    const pid = providerId || 'anthropic';
+    const keyResult = await chrome.storage.local.get(`apiKey_${pid}`);
+    const apiKey = keyResult[`apiKey_${pid}`];
+    if (!apiKey) { loadStoredSettings(); showScreen('settings'); return; }
 
     const days = Number(selectDays.value);
     const name = inputName.value.trim();
@@ -65,8 +96,8 @@ btnGenerate.addEventListener('click', async () => {
     const context         = buildContext({ habits, peakHours, totalVisits, name, role, days });
     const topCategoryIds  = habits.categories.slice(0, 3).map(c => c.id);
 
-    // Appel Claude directement dans le popup (évite le problème de durée de vie du service worker MV3)
-    const markdown = await generateProfile(truncateForPrompt(context), apiKey);
+    // Appel IA directement dans le popup (évite le problème de durée de vie du service worker MV3)
+    const markdown = await generateProfile(truncateForPrompt(context), apiKey, pid);
     const skills   = recommendSkills(topCategoryIds);
     await chrome.storage.local.set({ lastResult: { markdown, skills, error: null } });
 
@@ -93,13 +124,19 @@ function showError(el, msg) {
   el.classList.remove('hidden');
 }
 
-async function loadStoredKey() {
-  const { apiKey } = await chrome.storage.local.get('apiKey');
-  if (apiKey) apiKeyInput.value = apiKey;
+async function loadStoredSettings() {
+  const { providerId } = await chrome.storage.local.get('providerId');
+  const pid = providerId || 'anthropic';
+  selectProvider.value = pid;
+  updateProviderUI(pid);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
 (async () => {
-  const { apiKey } = await chrome.storage.local.get('apiKey');
-  showScreen(apiKey ? 'main' : 'settings');
+  const { providerId } = await chrome.storage.local.get('providerId');
+  const pid = providerId || 'anthropic';
+  const keyResult = await chrome.storage.local.get(`apiKey_${pid}`);
+  const hasKey = !!keyResult[`apiKey_${pid}`];
+  if (!hasKey) loadStoredSettings();
+  showScreen(hasKey ? 'main' : 'settings');
 })();
